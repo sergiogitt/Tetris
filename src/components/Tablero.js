@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import '../styles/Tablero.css';
 function Tablero(props) {
   
-  const altura = 15;
-  const anchura = 8;
+  const altura = 20;
+  const anchura = 10;
 
 
   useEffect(() => {
