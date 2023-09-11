@@ -18,8 +18,8 @@ function Tablero(props) {
         // Aquí puedes personalizar la representación visual de cada celda del props.tablero
         // Por ejemplo, si deseas aplicar estilos CSS, puedes usar un elemento <div> en lugar de <td>
         const celda = (
-          <td key={`${i}-${j}`}>
-            {props.tablero[i][j]}
+          <td key={`${i}-${j}`} className={props.coloresPiezas[i][j]}>
+            
           </td>
         );
         fila.push(celda);
