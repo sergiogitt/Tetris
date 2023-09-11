@@ -43,6 +43,7 @@ function App() {
         tableroAux.push(filaAux);
         tableroColoresAux.push(filaAuxColores)
       }
+      
       setTablero(tableroAux);
       setColoresPiezas(tableroColoresAux)
     };
@@ -120,17 +121,13 @@ function moverPiezas(){
     let stop=false;
     for (let j = 0; j < anchura; j++) {
       let filaAux=tableroAux[i];
-      if(tableroAux[i][j]==null&&tableroAux[(i-1)][j]==0&&i<tope){
+      if(tableroAux[i][j]==null&&tableroAux[(i-1)][j]==0&&!colisionVertical()){
         tableroAux[i][j]=0;
         tableroAux[(i-1)][j]=null;
         coloresAux[i][j]=coloresAux[(i-1)][j];
         coloresAux[(i-1)][j]="fondo";
       }
-      if(tableroAux[(i+1)][j]==1){
-        tableroAux[i]=filaAux;
-        break;
-        
-      }
+      
     }
     if(stop){
       break;
@@ -139,8 +136,21 @@ function moverPiezas(){
   console.log(tableroAux);
   setTablero(tableroAux)
   setColoresPiezas(coloresAux)
-  console.log(("frim"));
   
+}
+function colisionVertical(){
+  for (let i = (altura-1); i >0; i--) {
+    for (let j = 0; j < anchura; j++) {
+      if(i==(altura-1)&&tablero[i][j]==0){
+        return true;
+      }
+      if(tablero[i][j]==1&&tablero[(i+1)][j]==0){
+        return true;
+      }
+      
+    }
+  }
+  return false;
 }
 
   function juegoEnMarcha() {
