@@ -5,28 +5,11 @@ function Tablero(props) {
   
   const altura = 20;
   const anchura = 10;
+  
 
 
-  useEffect(() => {
-    // Función para inicializar el tablero
-    const inicializarTablero = () => {
-      const tableroAux = [];
-      for (let i = 0; i < altura; i++) {
-        const filaAux = Array(anchura).fill(null); // Llena la fila con valores nulos
-        tableroAux.push(filaAux);
-      }
-      props.setTablero(tableroAux);
-    };
-
-    // Llamar a la función de inicialización cuando el componente se monta
-    inicializarTablero();
-  }, []); // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
-  function iniciarJuego(){
-    generarPieza()
-  }
-  function generarPieza(){
-
-  }
+  console.log("rendering tablero");
+  
   function mostrarTablero() {
     const tabla = [];
     for (let i = 0; i < props.tablero.length; i++) {
