@@ -8,7 +8,6 @@ function Tablero(props) {
   
 
 
-  console.log("rendering tablero");
   
   function mostrarTablero() {
     const tabla = [];

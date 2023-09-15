@@ -8,14 +8,15 @@ function App() {
   const [tablero, setTablero] = useState([]);
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
-  const altura = 20;
+  const altura = 10;
   const anchura = 10;
   const colores=["yellow","purple","orange","red"]
+  let idInterval;
   const piezasDisponibles = [
-    [
+    /*[
       [0, 0],
       [0, 0]
-    ],
+    ],*/ 
     [
       [null, 0, null],
       [0, 0, null],
@@ -92,11 +93,11 @@ function App() {
   const filas = piezasDisponibles[pieza][0].length;
   const columnas = piezasDisponibles[pieza].length;
   const bloque = piezasDisponibles[pieza];
-
+console.log("colocando ");
   // Crea una nueva copia del tablero antes de realizar modificaciones
-  const tableroAux = [...tablero].map((fila) => [...fila]);
-  const tableroAuxColores = [...coloresPiezas].map((fila) => [...fila]);
-    console.log(tableroAux);
+  let tableroAux = [...tablero]
+  let tableroAuxColores = [...coloresPiezas]
+    
   for (let i = 0; i < filas; i++) {
     for (let j = 0; j < columnas; j++) {
       let col = j + inicio;
@@ -107,56 +108,88 @@ function App() {
       }
     }
   }
-  console.log(tableroAux);
+  console.log(...tableroAux);
 
   // Actualiza el estado con la nueva copia del tablero
   setTablero(tableroAux);
   setColoresPiezas(tableroAuxColores)
 }
 function moverPiezas(){
-  let tableroAux = [...tablero].map((fila) => [...fila]);
-  let coloresAux = [...coloresPiezas].map((fila) => [...fila]);
-  let tope=altura;
+  console.log("moviendo");
+  let tableroAux = [...tablero]
+  let coloresAux = [...coloresPiezas]
+  let controlAltura=false;
+  let contadorPiezas=4;
   for (let i = (altura-1); i >0; i--) {
     let stop=false;
     for (let j = 0; j < anchura; j++) {
-      let filaAux=tableroAux[i];
-      if(tableroAux[i][j]==null&&tableroAux[(i-1)][j]==0&&!colisionVertical()){
-        tableroAux[i][j]=0;
-        tableroAux[(i-1)][j]=null;
-        coloresAux[i][j]=coloresAux[(i-1)][j];
-        coloresAux[(i-1)][j]="fondo";
+      if(!colisionVertical(i,j)){
+        if(tableroAux[i][j]==null&&tableroAux[(i-1)][j]==0){
+          tableroAux[i][j]=0;
+          tableroAux[(i-1)][j]=null;
+          coloresAux[i][j]=coloresAux[(i-1)][j];
+          coloresAux[(i-1)][j]="fondo";
+          contadorPiezas--;
+        }
+      }else{
+        controlAltura=true;
+        console.log("Parando");
+        pararPiezas();
+        break;
       }
       
+      
     }
-    if(stop){
-      break;
-    }
+    
   }
-  console.log(tableroAux);
-  setTablero(tableroAux)
-  setColoresPiezas(coloresAux)
+  console.log(...tableroAux);
+  if(!controlAltura){
+    setTablero(tableroAux)
+    setColoresPiezas(coloresAux)
+  }else{
+    clearInterval(idInterval)
+    juegoEnMarcha()
+  }
+  
   
 }
-function colisionVertical(){
+function pararPiezas(){
+  let tableroAux = [...tablero]
+
   for (let i = (altura-1); i >0; i--) {
     for (let j = 0; j < anchura; j++) {
-      if(i==(altura-1)&&tablero[i][j]==0){
-        return true;
-      }
-      if(tablero[i][j]==1&&tablero[(i+1)][j]==0){
-        return true;
+      
+      if((tableroAux[i][j]==0)){
+        tableroAux[i][j]=1
       }
       
     }
   }
+  setTablero(tableroAux)
+}
+function colisionVertical(i,j){
+
+
+      if(i==(altura-1)&&tablero[i][j]==0){
+        console.log("choco con abajo");
+        return true;
+      }
+      if(tablero[i][j]==1&&tablero[(i-1)][j]==0){
+        return true;
+      }
+      
+    
   return false;
 }
 
-  function juegoEnMarcha() {
-    generarPieza(siguientePieza());
-    //setInterval(moverPiezas(),1000)
-  }
+function juegoEnMarcha() {
+  generarPieza(siguientePieza());
+
+  // Usamos una función anónima dentro de setTimeout para evitar la llamada inmediata
+    // Usamos setInterval para llamar a moverPiezas cada 2000 milisegundos (2 segundos)
+  idInterval=setInterval(moverPiezas, 1000);
+}
+
 
   return (
     <>
