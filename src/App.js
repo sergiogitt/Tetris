@@ -46,15 +46,61 @@ function App() {
       }
 
       setTablero(tableroAux);
-      setColoresPiezas(tableroColoresAux)
+      setColoresPiezas(tableroColoresAux);
     };
 
+
+
+    // Inicializa el tablero
     inicializarTablero();
+
+    // Agrega el event listener al montar el componente
+
   }, []); // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
+  // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
+  useEffect(() => {
+    // Función para inicializar el tablero
+
+
+    // Agregar event listener para la tecla "W" en el documento
+    const handleKeyLeft = (event) => {
+      if (event.key === 'a' || event.key === 'A') {
+        // El usuario ha presionado la tecla "W"
+        moverPiezaLateralIzq("left")
+        // Puedes realizar acciones adicionales aquí
+      }
+    };
+
+    // Inicializa el tablero
+
+    // Agrega el event listener al montar el componente
+    document.addEventListener('keydown', handleKeyLeft);
+
+    // Limpia el event listener cuando el componente se desmonta
+    return () => {
+      document.removeEventListener('keydown', handleKeyLeft);
+    };
+  }, [tablero]);
   function siguientePieza() {
     return Math.floor(Math.random() * piezasDisponibles.length); // Genera un número entre 0 (inclusive) y 4 (exclusivo)
 
   }
+  useEffect(() => {
+    const handleKeyUp = (event) => {
+      if (event.key === 'a' || event.key === 'A') {
+        moverPiezaLateralIzq("left");
+        // Puedes realizar acciones adicionales aquí
+      }
+    };
+
+    // Agrega el event listener al montar el componente
+    window.addEventListener('keyup', handleKeyUp);
+
+    // Limpia el event listener cuando el componente se desmonta
+    return () => {
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
 
   function generarPieza(pieza) {
     if (jugando) {
@@ -112,79 +158,108 @@ function App() {
     setTablero(tableroAux);
     setColoresPiezas(tableroAuxColores)
   }
-  function moverPiezas() {
+  function moverPiezaLateralIzq(direccion) {
     let tableroAux = [...tablero]
     let coloresAux = [...coloresPiezas]
     let controlAltura = false;
-    if (!colisionVertical(tableroAux)) {
-      for (let i = (altura - 1); i > 0; i--) {
-        for (let j = 0; j < anchura; j++) {
-          //if (!colisionVertical(i, j, tableroAux)) {
-          if (tableroAux[i][j] == null && tableroAux[(i - 1)][j] == 0) {
+    if (!colisionHorizontalLeft(tableroAux))
+      for (let j = 0; j < (anchura - 1); j++) {
+        for (let i = (altura - 1); i > 0; i--) {
+          //console.log(tableroAux[i][j+1]);
+          if (tableroAux[i][j] == null && tableroAux[(i)][(j + 1)] == 0) {
             tableroAux[i][j] = 0;
-            tableroAux[(i - 1)][j] = null;
-            coloresAux[i][j] = coloresAux[(i - 1)][j];
-            coloresAux[(i - 1)][j] = "fondo";
+            tableroAux[(i)][(j + 1)] = null;
+            coloresAux[i][j] = coloresAux[(i)][(j + 1)];
+            coloresAux[(i)][(j + 1)] = "fondo";
           }
-          //controlAltura=colisionVertical(i, j, tableroAux)
-
-          /*} else {
-            controlAltura = true;
-            console.log("Parando");
-            pararPiezas();
-            generarPieza(siguientePieza())
-  
-            break;
-          }*/
         }
       }
-    }else{
-      console.log("Parando");
-            pararPiezas();
-            generarPieza(siguientePieza())
-    }
-
-    if (!controlAltura) {
-      console.log(("actualizo"));
-      setTablero(tableroAux)
-      setColoresPiezas(coloresAux)
-    }
-
+  
+  if (!controlAltura) {
+    console.log(("actualizo"));
+    setTablero(tableroAux)
+    setColoresPiezas(coloresAux)
   }
-  function pararPiezas() {
-    let tableroAux = [...tablero]
+}
 
+
+function moverPiezas() {
+  let tableroAux = [...tablero]
+  let coloresAux = [...coloresPiezas]
+  let controlAltura = false;
+  if (!colisionVertical(tableroAux)) {
     for (let i = (altura - 1); i > 0; i--) {
       for (let j = 0; j < anchura; j++) {
-
-        if ((tableroAux[i][j] == 0)) {
-          tableroAux[i][j] = 1
+        //if (!colisionVertical(i, j, tableroAux)) {
+        if (tableroAux[i][j] == null && tableroAux[(i - 1)][j] == 0) {
+          tableroAux[i][j] = 0;
+          tableroAux[(i - 1)][j] = null;
+          coloresAux[i][j] = coloresAux[(i - 1)][j];
+          coloresAux[(i - 1)][j] = "fondo";
         }
-
       }
     }
-    setTablero(tableroAux)
+  } else {
+    pararPiezas();
+    generarPieza(siguientePieza())
   }
+
+  if (!controlAltura) {
+    console.log(("actualizo"));
+    setTablero(tableroAux)
+    setColoresPiezas(coloresAux)
+  }
+
+}
+function pararPiezas() {
+  let tableroAux = [...tablero]
+
+  for (let i = (altura - 1); i > 0; i--) {
+    for (let j = 0; j < anchura; j++) {
+
+      if ((tableroAux[i][j] == 0)) {
+        tableroAux[i][j] = 1
+      }
+
+    }
+  }
+  setTablero(tableroAux)
+}
+function colisionHorizontalLeft(array) {
+  console.log(...array);
+  for (let j = 0; j < anchura; j++) {
+    for (let i = 0; i < altura; i++) {
+      if (j == 0 && array[i][j] === 0) {
+        console.log("Chocó con el borde izquierdo en (" + i + ", " + j + ")");
+        return true;
+      }
+      if (array[i][(j-1)] === 0 && array[i][(j - 2)] === 1) {
+        console.log("Chocó con un bloque en (" + i + ", " + j + ")");
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
   function colisionVertical(array) {
 
     for (let i = (altura - 1); i > 0; i--) {
       for (let j = 0; j < anchura; j++) {
         if (i == (altura - 1) && array[i][j] == 0) {
           console.log("choco con abajo" + i + " " + j);
-          console.log(...array);
           return true;
         }
-    
+
         if (array[i - 1][j] == 1 && array[(i - 2)][j] == 0) {
           console.log("choco con bloque");
-          console.log(...array);
-    
-    
+
+
           return true;
         }
       }
     }
-   
+
 
 
 
@@ -203,7 +278,7 @@ function App() {
   return (
     <>
       <Tablero tablero={tablero} setTablero={setTablero} generarPieza={generarPieza} coloresPiezas={coloresPiezas} setColoresPiezas={setColoresPiezas}></Tablero>
-      <button onClick={() => juegoEnMarcha()}>Empezar</button><button onClick={() => moverPiezas()}>seguir</button>
+      <button onClick={() => juegoEnMarcha()}>Empezar</button><button onClick={() => moverPiezaLateralIzq()}>seguir</button>
     </>);
 }
 
