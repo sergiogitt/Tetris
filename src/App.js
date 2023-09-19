@@ -13,6 +13,15 @@ function App() {
   const colores = ["square", "t", "l", "z"]
   let idInterval;
   const piezasDisponibles = [
+    
+    
+    [
+      
+      [0,0,0,0],
+      [null, null, null,null],
+      [null, null, null,null],
+      [null, null, null,null]
+    ],
     [
       [0, 0],
       [0, 0]
@@ -66,7 +75,7 @@ function App() {
     const handleKeyLeft = (event) => {
       if (event.key === 'a' || event.key === 'A') {
         // El usuario ha presionado la tecla "W"
-        moverPiezaLateralIzq("left")
+        moverPiezaLateralIzq()
         // Puedes realizar acciones adicionales aquí
       }
     };
@@ -87,10 +96,17 @@ function App() {
   }
   useEffect(() => {
     const handleKeyUp = (event) => {
-      if (event.key === 'a' || event.key === 'A') {
-        moverPiezaLateralIzq("left");
+      if (event.key === 'a' || event.key === 'A'||event.key==='ArrowLeft') {
+        //moverPiezaLateralIzq("left");
+        document.getElementById("moverIzq").click()
         // Puedes realizar acciones adicionales aquí
       }
+      if (event.key === 'd' || event.key === 'D'||event.key==='ArrowRight') {
+        //moverPiezaLateralIzq("left");
+        document.getElementById("moverDer").click()
+        // Puedes realizar acciones adicionales aquí
+      }
+      console.log(event.key);
     };
 
     // Agrega el event listener al montar el componente
@@ -319,10 +335,10 @@ function colisionHorizontalRight(array) {
 
 
   return (
-    <>
+    <><h1>En desarrollo</h1>
       <Tablero tablero={tablero} setTablero={setTablero} generarPieza={generarPieza} coloresPiezas={coloresPiezas} setColoresPiezas={setColoresPiezas}></Tablero>
-      <button onClick={() => juegoEnMarcha()}>Empezar</button><button onClick={() => moverPiezaLateralIzq()}>seguir</button>
-      <button onClick={() => moverPiezaLateralDer()}>dere</button>
+      <button onClick={() => juegoEnMarcha()}>Empezar</button><button id="moverIzq" onClick={() => moverPiezaLateralIzq()}>seguir</button>
+      <button id="moverDer" onClick={() => moverPiezaLateralDer()}>dere</button>
     </>);
 }
 
