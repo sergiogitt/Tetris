@@ -158,20 +158,29 @@ function App() {
     // Crea una nueva copia del tablero antes de realizar modificaciones
     let tableroAux = [...tablero]
     let tableroAuxColores = [...coloresPiezas]
-    for (let i = 0; i < filas; i++) {
-      for (let j = 0; j < columnas; j++) {
-        let col = j + inicio;
-        tableroAux[i][col] = bloque[i][j];
-        if (bloque[i][j] == 0) {
-          tableroAuxColores[i][col] = colores[pieza]
-
+    if(!colisionVertical(tableroAux)){
+      for (let i = 0; i < filas; i++) {
+        for (let j = 0; j < columnas; j++) {
+          let col = j + inicio;
+          tableroAux[i][col] = bloque[i][j];
+          if (bloque[i][j] == 0) {
+            tableroAuxColores[i][col] = colores[pieza]
+  
+          }
         }
       }
+    }else{
+      setJugando(false)
+      clearInterval(idInterval)
+    }
+    
+    if(jugando){
+      setTablero(tableroAux);
+      setColoresPiezas(tableroAuxColores)
     }
 
     // Actualiza el estado con la nueva copia del tablero
-    setTablero(tableroAux);
-    setColoresPiezas(tableroAuxColores)
+    
   }
   function moverPiezaLateralIzq(direccion) {
     let tableroAux = [...tablero]
@@ -310,10 +319,8 @@ function colisionHorizontalRight(array) {
           return true;
         }
 
-        if (array[i - 1][j] == 1 && array[(i - 2)][j] == 0) {
+        if (array[i ][j] == 1 && array[(i - 1)][j] == 0) {
           console.log("choco con bloque");
-
-
           return true;
         }
       }
@@ -330,7 +337,7 @@ function colisionHorizontalRight(array) {
 
     // Usamos una función anónima dentro de setTimeout para evitar la llamada inmediata
     // Usamos setInterval para llamar a moverPiezas cada 2000 milisegundos (2 segundos)
-    idInterval = setInterval(moverPiezas, 500);
+    idInterval = setInterval(moverPiezas, 200);
   }
 
 
