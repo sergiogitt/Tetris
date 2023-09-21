@@ -37,6 +37,15 @@ table{
       2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
       -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
   }
+  .I {
+    width: 2rem;
+    height: 2rem;
+    background-color: #0F6CF2;
+    border: 4px solid #0C52A4; /* Borde de un tono más oscuro */
+    box-shadow:
+      2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
+      -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
+  }
   
 .z{
     max-width: 1rem;
