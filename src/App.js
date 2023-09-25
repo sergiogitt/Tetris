@@ -20,11 +20,10 @@ function App() {
 
 
     [
-
-      [0, 0, 0, 0],
-      [null, null, null, null],
-      [null, null, null, null],
-      [null, null, null, null]
+      [0, null, null, null],
+      [0, null, null, null],
+      [0, null, null, null],
+      [0, null, null, null]
     ],
     [
       [0, 0],
@@ -234,6 +233,7 @@ function App() {
       setTablero(tableroAux)
       setColoresPiezas(coloresAux)
     }
+    console.log(...tableroAux);
 
   }
   function pararPiezas() {
@@ -303,8 +303,88 @@ function App() {
 
   function juegoEnMarcha() {
     generarPieza()
-    idInterval = setInterval(moverPiezas, 200);
+    idInterval = setInterval(moverPiezas, 1000);
   }
+  function findBoundingSquare(matrix) {
+    const numRows = matrix.length;
+    const numCols = matrix[0].length;
+
+    let minX = numCols; // Inicializa los valores de minX, minY, maxX y maxY con valores extremos.
+    let minY = numRows;
+    let maxX = -1;
+    let maxY = -1;
+
+    // Encuentra las coordenadas del rectángulo que rodea a los elementos '1'.
+    for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j < numCols; j++) {
+            if (matrix[i][j] === 0) {
+                minX = Math.min(minX, j);
+                minY = Math.min(minY, i);
+                maxX = Math.max(maxX, j);
+                maxY = Math.max(maxY, i);
+            }
+        }
+    }
+
+    // Calcula las dimensiones del cuadrado que rodea a los elementos '1'.
+    const squareSize = Math.max(maxX - minX + 1, maxY - minY + 1);
+
+    return { minX, minY, squareSize };
+}
+
+function rotateBoundingSquare(matrix) {
+    const n = matrix.length;
+    const ret = new Array(n).fill(0).map(() => new Array(n).fill(0));
+
+    for (let i = 0; i < n; ++i) {
+        for (let j = 0; j < n; ++j) {
+            ret[i][j] = matrix[n - j - 1][i];
+        }
+    }
+
+    return ret;
+}
+
+function rotateConnectedOnes() {
+    clearInterval(idInterval)
+    let matrix=tablero;
+    let colors=coloresPiezas;
+    console.log(colors);
+    const { minX, minY, squareSize } = findBoundingSquare(matrix);
+    // Extrae la matriz cuadrática que rodea a los elementos '1'.
+    const boundingSquare = [];
+    const boundingSquareColours = [];
+    for (let i = minY; i < minY + squareSize; i++) {
+        let row = [];
+        let row2 = [];
+        for (let j = minX; j < minX + squareSize; j++) {
+            row.push(matrix[i][j]);
+            row2.push(colors[i][j]);
+        }
+        boundingSquare.push(row);
+        boundingSquareColours.push(row2);
+    }
+
+    // Rota la matriz cuadrática.
+    let rotatedSquare = rotateBoundingSquare(boundingSquare);
+    let rotatedSquareColours = rotateBoundingSquare(boundingSquareColours);
+    // Actualiza la matriz original con los valores rotados.
+    for (let i = minY; i < minY + squareSize; i++) {
+        for (let j = minX; j < minX + squareSize; j++) {
+            matrix[i][j] = rotatedSquare[i - minY][j - minX];
+            colors[i][j] = rotatedSquareColours[i - minY][j - minX];
+        }
+    }
+    setTablero(matrix)
+    setColoresPiezas(colors)
+    
+   console.log(matrix);
+
+    return matrix;
+}
+
+
+
 
 
   return (
@@ -319,7 +399,7 @@ function App() {
       <button onClick={juegoEnMarcha}>Empezar</button>
       <button id="moverIzq" onClick={moverPiezaLateralIzq}>Izquierda</button>
       <button id="moverDer" onClick={moverPiezaLateralDer}>Derecha</button>
-      <button id="girar" onClick={girarPieza}>Girar</button>
+      <button id="girar" onClick={rotateConnectedOnes}>Girar</button>
       {piezaSiguiente ? (
         <Pieza
           siguientePieza={piezasDisponibles[piezaSiguiente]}
