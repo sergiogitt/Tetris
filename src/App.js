@@ -7,6 +7,7 @@ import Pieza from './components/Pieza';
 
 function App() {
   const [tablero, setTablero] = useState([]);
+  const [posicion, setPosicion] = useState(0);
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
   const [piezaActual, setPiezaActual] = useState(null);
@@ -17,32 +18,120 @@ function App() {
   const colores = ["square", "t", "l", "z", "I"]
   let idInterval;
   const piezasDisponibles = [
-
-
     [
-      [0, null, null, null],
-      [0, null, null, null],
-      [0, null, null, null],
-      [0, null, null, null]
+      [0, null,null],
+      [0, null,null],
+      [0, null,null]
     ],
     [
-      [0, 0],
-      [0, 0]
+      [0, 0,null],
+      [0, 0,null],
+      [null, null, null]
     ],
     [
       [null, 0, null],
       [0, 0, null],
       [null, 0, null]
     ],
-    [
-      [null, 0, null],
-      [null, 0, null],
-      [null, 0, 0]
-    ],
+   [
+        [0, null, null],
+        [0, null, null],
+        [0, 0, null]
+   ],
     [
       [null, 0, 0],
       [0, 0, null],
       [null, null, null]
+    ]
+  ]
+  const giros = [
+    [
+      [
+        [ null,0, null],
+        [ null,0, null],
+        [ null,0, null]
+      ],
+      [
+        [ null,null, null],
+        [ 0,0, 0],
+        [ null,null, null]
+        ]
+    ],
+    [
+      [
+        [0, 0,null],
+        [0, 0,null]
+      ]
+    ],
+    [
+      [
+        [null, 0, null],
+        [0, 0, null],
+        [null, 0, null]
+      ],
+      [
+        [null, 0, null],
+        [0, 0, 0],
+        [null, null, null]
+      ],
+      [
+        [null, 0, null],
+        [null, 0, 0],
+        [null, 0, null]
+      ],
+      [
+        [null, null, null],
+        [0, 0, 0],
+        [null, 0, null]
+      ]
+      
+    ],
+    [
+      [
+        [0, null, null],
+        [0, null, null],
+        [0, 0, null]
+      ],[
+        [0, 0, 0],
+        [0, null, null],
+        [null, null, null],
+      ],
+      [
+        [null,0, 0],
+        [null,null, 0],
+        [null,null, 0]
+      ],
+      [
+        [null, null, null],
+        [null, null, 0],
+        [0, 0, 0],
+        
+      ]
+      
+    ],
+    [
+      [
+        [null, 0, 0],
+        [0, 0, null],
+        [null, null, null]
+      ],
+      [
+        [null, 0, null],
+        [null, 0, 0],
+        [null, null, 0]
+      ],
+      [
+        [null, null, null],
+        [null, 0, 0],
+        [0, 0, null],
+        
+      ],
+      [
+        [0, null, null],
+        [0, 0, null],
+        [null, 0, null]
+      ]
+      
     ]
   ]
   useEffect(() => {
@@ -63,6 +152,7 @@ function App() {
   }, []); // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
 
   function siguientePieza() {
+    setPosicion(0)
     return Math.floor(Math.random() * piezasDisponibles.length); // Genera un número entre 0 (inclusive) y 4 (exclusivo)
 
   }
@@ -86,8 +176,8 @@ function App() {
 
   function generarPieza() {
   if (jugando) {
-    let numeroPiezaActual;
-    let numeroPiezaSiguiente;
+    let numeroPiezaActual=0;
+    let numeroPiezaSiguiente=0;
     if (piezaActual === null) {
       console.log("genero nuevo");
       numeroPiezaActual = siguientePieza();
@@ -233,7 +323,6 @@ function App() {
       setTablero(tableroAux)
       setColoresPiezas(coloresAux)
     }
-    console.log(...tableroAux);
 
   }
   function pararPiezas() {
@@ -303,7 +392,7 @@ function App() {
 
   function juegoEnMarcha() {
     generarPieza()
-    idInterval = setInterval(moverPiezas, 1000);
+    //idInterval = setInterval(moverPiezas, 1000);
   }
   function findBoundingSquare(matrix) {
     const numRows = matrix.length;
@@ -326,34 +415,46 @@ function App() {
         }
     }
 
+
     // Calcula las dimensiones del cuadrado que rodea a los elementos '1'.
     const squareSize = Math.max(maxX - minX + 1, maxY - minY + 1);
-
     return { minX, minY, squareSize };
 }
 
 function rotateBoundingSquare(matrix) {
-    const n = matrix.length;
-    const ret = new Array(n).fill(0).map(() => new Array(n).fill(0));
-
-    for (let i = 0; i < n; ++i) {
-        for (let j = 0; j < n; ++j) {
-            ret[i][j] = matrix[n - j - 1][i];
-        }
+    if((posicion+1)>=giros[piezaActual].length){
+      setPosicion(0)
+      return giros[piezaActual][0]
+    }else{
+      let nueva_posicion=posicion+1;
+      setPosicion(nueva_posicion)
+      return giros[piezaActual][nueva_posicion]
     }
-
-    return ret;
 }
-
+function rotateBoundingSquareColours(matrix){
+  let colors=[];
+  for(let i=0;i<matrix.length;i++){
+    let fila=[];
+    for(let j=0;j<matrix[0].length;j++){
+      if(matrix[i][j]==0){
+        fila.push(colores[piezaActual])
+      }else{
+        fila.push("fondo")
+      }
+    }
+    colors.push(fila)
+  }
+  return colors;
+}
 function rotateConnectedOnes() {
     clearInterval(idInterval)
-    let matrix=tablero;
-    let colors=coloresPiezas;
-    console.log(colors);
-    const { minX, minY, squareSize } = findBoundingSquare(matrix);
+    let matrix=[...tablero];
+    let colors=[...coloresPiezas];
+    let { minX, minY, squareSize } = findBoundingSquare(matrix);
+    console.log({ minX, minY, squareSize });
     // Extrae la matriz cuadrática que rodea a los elementos '1'.
-    const boundingSquare = [];
-    const boundingSquareColours = [];
+    let boundingSquare = [];
+    let boundingSquareColours = [];
     for (let i = minY; i < minY + squareSize; i++) {
         let row = [];
         let row2 = [];
@@ -364,21 +465,51 @@ function rotateConnectedOnes() {
         boundingSquare.push(row);
         boundingSquareColours.push(row2);
     }
+    console.log(boundingSquare);
 
     // Rota la matriz cuadrática.
     let rotatedSquare = rotateBoundingSquare(boundingSquare);
-    let rotatedSquareColours = rotateBoundingSquare(boundingSquareColours);
+    console.log(rotatedSquare);
+    let rotatedSquareColours = rotateBoundingSquareColours(rotatedSquare);
     // Actualiza la matriz original con los valores rotados.
-    for (let i = minY; i < minY + squareSize; i++) {
-        for (let j = minX; j < minX + squareSize; j++) {
+    if(piezaActual==0&&posicion==0){
+      minX--;
+    }
+    if(piezaActual==0&&posicion==1){
+      minY--;
+    }
+    if(piezaActual==2&&posicion==2){
+      minX--;
+    }
+    if(piezaActual==2&&posicion==3){
+      minY--;
+    }
+    if(piezaActual==3&&posicion==2){
+      minX--;
+    }
+    if(piezaActual==3&&posicion==3){
+      minY--;
+    }
+    if(piezaActual==4&&posicion==1){
+      minX--;
+    }
+    if(piezaActual==4&&posicion==2){
+      minY--;
+    }
+
+
+    // Actualiza la matriz original con los valores rotados en el centro.
+    for (let i = minY; i < minY + rotatedSquare.length; i++) {
+        for (let j = minX; j < minX + 3; j++) {
             matrix[i][j] = rotatedSquare[i - minY][j - minX];
             colors[i][j] = rotatedSquareColours[i - minY][j - minX];
-        }
+
+          }
     }
+
     setTablero(matrix)
     setColoresPiezas(colors)
-    
-   console.log(matrix);
+
 
     return matrix;
 }
