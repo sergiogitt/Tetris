@@ -251,13 +251,13 @@ function App() {
     // Actualiza el estado con la nueva copia del tablero
 
   }
-  function moverPiezaLateralIzq(direccion) {
+  function moverPiezaLateralIzq() {
     let tableroAux = [...tablero]
     let coloresAux = [...coloresPiezas]
     let controlAltura = false;
     if (!colisionHorizontalLeft(tableroAux)) {
       for (let j = 0; j < (anchura - 1); j++) {
-        for (let i = (altura - 1); i > 0; i--) {
+        for (let i = (altura - 1); i >= 0; i--) {
           if (tableroAux[i][j] == null && tableroAux[(i)][(j + 1)] == 0) {
             tableroAux[i][j] = 0;
             tableroAux[(i)][(j + 1)] = null;
@@ -386,8 +386,33 @@ function App() {
 
     return false;
   }
-  function girarPieza() {
-
+  function contarPiezas(array){
+    let contador=0;
+    for (let i = 0; i < array.length; i++) {      
+      for (let j = 0; j < array[0].length; j++) {
+        if(array[i][j]==0){
+          contador++;
+        }
+        
+      }
+    }
+    return contador;
+  }
+  function colisionGiros(matrix,matrixOriginal){
+ 
+    for (let i = 0; i < matrix.length; i++) {      
+      if(matrix[i].length>anchura){
+        return true;
+      }
+      for (let j = 0; j < matrix[0].length; j++) {
+        if(matrixOriginal[i][j]==1&&matrix[i][j]==0){
+          return true;
+        }
+        
+      }
+    }
+    
+    return false;
   }
 
   function juegoEnMarcha() {
@@ -447,11 +472,11 @@ function rotateBoundingSquareColours(matrix){
   return colors;
 }
 function rotateConnectedOnes() {
-    clearInterval(idInterval)
+    let matrixOriginal=[...tablero];
+    let colorsOriginal=[...coloresPiezas];
     let matrix=[...tablero];
     let colors=[...coloresPiezas];
     let { minX, minY, squareSize } = findBoundingSquare(matrix);
-    console.log({ minX, minY, squareSize });
     // Extrae la matriz cuadrática que rodea a los elementos '1'.
     let boundingSquare = [];
     let boundingSquareColours = [];
@@ -465,11 +490,9 @@ function rotateConnectedOnes() {
         boundingSquare.push(row);
         boundingSquareColours.push(row2);
     }
-    console.log(boundingSquare);
-
+    
     // Rota la matriz cuadrática.
     let rotatedSquare = rotateBoundingSquare(boundingSquare);
-    console.log(rotatedSquare);
     let rotatedSquareColours = rotateBoundingSquareColours(rotatedSquare);
     // Actualiza la matriz original con los valores rotados.
     if(piezaActual==0&&posicion==0){
@@ -496,27 +519,38 @@ function rotateConnectedOnes() {
     if(piezaActual==4&&posicion==2){
       minY--;
     }
-
-
+    console.log(minX+3);
+    if(minX+2>=anchura){
+      return 0;
+    }
+    let contador1=contarPiezas(matrixOriginal)
+    let original=matrixOriginal;
     // Actualiza la matriz original con los valores rotados en el centro.
     for (let i = minY; i < minY + rotatedSquare.length; i++) {
         for (let j = minX; j < minX + 3; j++) {
             matrix[i][j] = rotatedSquare[i - minY][j - minX];
             colors[i][j] = rotatedSquareColours[i - minY][j - minX];
-
           }
     }
-
-    setTablero(matrix)
-    setColoresPiezas(colors)
-
-
-    return matrix;
+    let contador2=contarPiezas(matrix)
+    
+    
+    let hayColision=colisionGiros(matrix,matrixOriginal)
+    hayColision=hayColision||(contador1!=contador2)
+    console.log(hayColision);
+    if(!hayColision){
+      console.log("noo hay colision");
+      setTablero(matrix)
+      setColoresPiezas(colors)
+    }else{
+      console.log("hay colision");
+      matrix=original;
+      colors=colorsOriginal
+      setTablero(original)
+      setColoresPiezas(colorsOriginal)
+    }
+    console.log(matrixOriginal);
 }
-
-
-
-
 
   return (
     <>
