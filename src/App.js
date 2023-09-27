@@ -19,13 +19,13 @@ function App() {
   let idInterval;
   const piezasDisponibles = [
     [
-      [0, null,null],
-      [0, null,null],
-      [0, null,null]
+      [0, null, null],
+      [0, null, null],
+      [0, null, null]
     ],
     [
-      [0, 0,null],
-      [0, 0,null],
+      [0, 0, null],
+      [0, 0, null],
       [null, null, null]
     ],
     [
@@ -33,11 +33,11 @@ function App() {
       [0, 0, null],
       [null, 0, null]
     ],
-   [
-        [0, null, null],
-        [0, null, null],
-        [0, 0, null]
-   ],
+    [
+      [0, null, null],
+      [0, null, null],
+      [0, 0, null]
+    ],
     [
       [null, 0, 0],
       [0, 0, null],
@@ -47,20 +47,20 @@ function App() {
   const giros = [
     [
       [
-        [ null,0, null],
-        [ null,0, null],
-        [ null,0, null]
+        [null, 0, null],
+        [null, 0, null],
+        [null, 0, null]
       ],
       [
-        [ null,null, null],
-        [ 0,0, 0],
-        [ null,null, null]
-        ]
+        [null, null, null],
+        [0, 0, 0],
+        [null, null, null]
+      ]
     ],
     [
       [
-        [0, 0,null],
-        [0, 0,null]
+        [0, 0, null],
+        [0, 0, null]
       ]
     ],
     [
@@ -84,30 +84,30 @@ function App() {
         [0, 0, 0],
         [null, 0, null]
       ]
-      
+
     ],
     [
       [
         [0, null, null],
         [0, null, null],
         [0, 0, null]
-      ],[
+      ], [
         [0, 0, 0],
         [0, null, null],
         [null, null, null],
       ],
       [
-        [null,0, 0],
-        [null,null, 0],
-        [null,null, 0]
+        [null, 0, 0],
+        [null, null, 0],
+        [null, null, 0]
       ],
       [
         [null, null, null],
         [null, null, 0],
         [0, 0, 0],
-        
+
       ]
-      
+
     ],
     [
       [
@@ -124,14 +124,14 @@ function App() {
         [null, null, null],
         [null, 0, 0],
         [0, 0, null],
-        
+
       ],
       [
         [0, null, null],
         [0, 0, null],
         [null, 0, null]
       ]
-      
+
     ]
   ]
   useEffect(() => {
@@ -175,38 +175,59 @@ function App() {
   }, []);
 
   function generarPieza() {
-  if (jugando) {
-    let numeroPiezaActual=0;
-    let numeroPiezaSiguiente=0;
-    if (piezaActual === null) {
-      console.log("genero nuevo");
-      numeroPiezaActual = siguientePieza();
-      setPiezaActual(numeroPiezaActual);
-    } else {
-      setPiezaActual(piezaSiguiente); // Cambia piezaSiguiente a numeroPiezaSiguiente
-    }
-    console.log("actual " + numeroPiezaActual);
+    if (jugando) {
+      let numeroPiezaActual = 0;
+      let numeroPiezaSiguiente = 0;
+      if (piezaActual === null) {
+        console.log("genero nuevo");
+        numeroPiezaActual = siguientePieza();
+        setPiezaActual(numeroPiezaActual);
+      } else {
+        setPiezaActual(piezaSiguiente); // Cambia piezaSiguiente a numeroPiezaSiguiente
+      }
+      console.log("actual " + numeroPiezaActual);
 
-    numeroPiezaSiguiente = siguientePieza();
-    console.log("siguiente " + numeroPiezaSiguiente);
-    setPiezaSiguiente(numeroPiezaSiguiente);
+      numeroPiezaSiguiente = siguientePieza();
+      console.log("siguiente " + numeroPiezaSiguiente);
+      setPiezaSiguiente(numeroPiezaSiguiente);
 
-    let anchuraPieza = calcularAnchura(numeroPiezaActual);
-    let inicio = anchura - anchuraPieza;
-    if (inicio % 2 === 0) {
-      inicio = inicio / 2;
-    } else {
-      inicio = (inicio + 1) / 2;
+      let anchuraPieza = calcularAnchura(numeroPiezaActual);
+      let inicio = anchura - anchuraPieza;
+      if (inicio % 2 === 0) {
+        inicio = inicio / 2;
+      } else {
+        inicio = (inicio + 1) / 2;
+      }
+      colocarPieza(numeroPiezaActual, inicio);
     }
-    colocarPieza(numeroPiezaActual, inicio);
   }
-}
 
   function calcularAnchura(pieza) {
-
-    const filas = piezasDisponibles[pieza][0].length;
-    const columnas = piezasDisponibles[pieza].length;
+    
     const bloque = piezasDisponibles[pieza]
+    
+    const filas = bloque[0].length;
+    const columnas = bloque.length;
+    
+    let anchuraMaxima = 0;
+
+    for (let i = 0; i < filas; i++) {
+      for (let j = 0; j < columnas; j++) {
+        if (bloque[j][i] === 0) {
+          anchuraMaxima++;
+          break;
+        }
+      }
+    }
+    return anchuraMaxima;
+  }
+  function calcularAnchuraMaxima(pieza) {
+    
+    const bloque = pieza;
+    
+    const filas = bloque[0].length;
+    const columnas = bloque.length;
+    
     let anchuraMaxima = 0;
 
     for (let i = 0; i < filas; i++) {
@@ -386,32 +407,35 @@ function App() {
 
     return false;
   }
-  function contarPiezas(array){
-    let contador=0;
-    for (let i = 0; i < array.length; i++) {      
+  function contarPiezas(array) {
+    let contador = 0;
+    for (let i = 0; i < array.length; i++) {
       for (let j = 0; j < array[0].length; j++) {
-        if(array[i][j]==0){
+        if (array[i][j] == 0) {
           contador++;
         }
-        
+
       }
     }
     return contador;
   }
-  function colisionGiros(matrix,matrixOriginal){
- 
-    for (let i = 0; i < matrix.length; i++) {      
-      if(matrix[i].length>anchura){
+  function colisionGiros(matrix, matrixOriginal) {
+
+    for (let i = 0; i < matrix.length; i++) {
+      if (matrix[i].length > anchura) {
+        console.log(matrix[i].length);
+        console.log(anchura);
+        console.log("tope lado");
         return true;
       }
       for (let j = 0; j < matrix[0].length; j++) {
-        if(matrixOriginal[i][j]==1&&matrix[i][j]==0){
+        if (matrixOriginal[i][j] == 1 && matrix[i][j] == 0) {
+          console.log("tope ficha");
           return true;
         }
-        
       }
     }
-    
+
     return false;
   }
 
@@ -430,127 +454,136 @@ function App() {
 
     // Encuentra las coordenadas del rectángulo que rodea a los elementos '1'.
     for (let i = 0; i < numRows; i++) {
-        for (let j = 0; j < numCols; j++) {
-            if (matrix[i][j] === 0) {
-                minX = Math.min(minX, j);
-                minY = Math.min(minY, i);
-                maxX = Math.max(maxX, j);
-                maxY = Math.max(maxY, i);
-            }
+      for (let j = 0; j < numCols; j++) {
+        if (matrix[i][j] === 0) {
+          minX = Math.min(minX, j);
+          minY = Math.min(minY, i);
+          maxX = Math.max(maxX, j);
+          maxY = Math.max(maxY, i);
         }
+      }
     }
 
 
     // Calcula las dimensiones del cuadrado que rodea a los elementos '1'.
     const squareSize = Math.max(maxX - minX + 1, maxY - minY + 1);
     return { minX, minY, squareSize };
-}
+  }
 
-function rotateBoundingSquare(matrix) {
-    if((posicion+1)>=giros[piezaActual].length){
+  function rotateBoundingSquare(matrix) {
+    if ((posicion + 1) >= giros[piezaActual].length) {
       setPosicion(0)
       return giros[piezaActual][0]
-    }else{
-      let nueva_posicion=posicion+1;
+    } else {
+      let nueva_posicion = posicion + 1;
       setPosicion(nueva_posicion)
       return giros[piezaActual][nueva_posicion]
     }
-}
-function rotateBoundingSquareColours(matrix){
-  let colors=[];
-  for(let i=0;i<matrix.length;i++){
-    let fila=[];
-    for(let j=0;j<matrix[0].length;j++){
-      if(matrix[i][j]==0){
-        fila.push(colores[piezaActual])
-      }else{
-        fila.push("fondo")
-      }
-    }
-    colors.push(fila)
   }
-  return colors;
-}
-function rotateConnectedOnes() {
-    let matrixOriginal=[...tablero];
-    let colorsOriginal=[...coloresPiezas];
-    let matrix=[...tablero];
-    let colors=[...coloresPiezas];
-    let { minX, minY, squareSize } = findBoundingSquare(matrix);
+  function rotateBoundingSquareColours(matrix) {
+    let colors = [];
+    for (let i = 0; i < matrix.length; i++) {
+      let fila = [];
+      for (let j = 0; j < matrix[0].length; j++) {
+        if (matrix[i][j] == 0) {
+          fila.push(colores[piezaActual])
+        } else {
+          fila.push("fondo")
+        }
+      }
+      colors.push(fila)
+    }
+    return colors;
+  }
+  function copiaArray(array){
+    let aux=[];
+    for (let i = 0; i < array.length; i++) {
+      let fila=[];
+      for (let j = 0; j < array[i].length; j++) {
+        fila.push(array[i][j])
+      }
+      aux.push(fila);
+
+      
+    }
+    return aux;
+  }
+  function rotateConnectedOnes() {
+    let tableroAuxOriginal = copiaArray(tablero);
+    let colorsOriginal = copiaArray(coloresPiezas);
+    console.log(tableroAuxOriginal);
+    let tableroAux = copiaArray(tablero);
+    let colors = copiaArray(coloresPiezas);
+    let { minX, minY, squareSize } = findBoundingSquare(tableroAux);
     // Extrae la matriz cuadrática que rodea a los elementos '1'.
     let boundingSquare = [];
     let boundingSquareColours = [];
     for (let i = minY; i < minY + squareSize; i++) {
-        let row = [];
-        let row2 = [];
-        for (let j = minX; j < minX + squareSize; j++) {
-            row.push(matrix[i][j]);
-            row2.push(colors[i][j]);
-        }
-        boundingSquare.push(row);
-        boundingSquareColours.push(row2);
+      let row = [];
+      let row2 = [];
+      for (let j = minX; j < minX + squareSize; j++) {
+        row.push(tableroAux[i][j]);
+        row2.push(colors[i][j]);
+      }
+      boundingSquare.push(row);
+      boundingSquareColours.push(row2);
     }
-    
     // Rota la matriz cuadrática.
     let rotatedSquare = rotateBoundingSquare(boundingSquare);
     let rotatedSquareColours = rotateBoundingSquareColours(rotatedSquare);
     // Actualiza la matriz original con los valores rotados.
-    if(piezaActual==0&&posicion==0){
+    
+    if (piezaActual == 0 && posicion == 0) {
       minX--;
     }
-    if(piezaActual==0&&posicion==1){
+    if (piezaActual == 0 && posicion == 1) {
       minY--;
     }
-    if(piezaActual==2&&posicion==2){
+    if (piezaActual == 2 && posicion == 2) {
       minX--;
     }
-    if(piezaActual==2&&posicion==3){
+    if (piezaActual == 2 && posicion == 3) {
       minY--;
     }
-    if(piezaActual==3&&posicion==2){
+    if (piezaActual == 3 && posicion == 2) {
       minX--;
     }
-    if(piezaActual==3&&posicion==3){
+    if (piezaActual == 3 && posicion == 3) {
       minY--;
     }
-    if(piezaActual==4&&posicion==1){
+    if (piezaActual == 4 && posicion == 1) {
       minX--;
     }
-    if(piezaActual==4&&posicion==2){
+    if (piezaActual == 4 && posicion == 2) {
       minY--;
     }
-    console.log(minX+3);
-    if(minX+2>=anchura){
-      return 0;
-    }
-    let contador1=contarPiezas(matrixOriginal)
-    let original=matrixOriginal;
+    
+    let contador1 = contarPiezas(tableroAuxOriginal)
+    let original = tableroAuxOriginal;
     // Actualiza la matriz original con los valores rotados en el centro.
     for (let i = minY; i < minY + rotatedSquare.length; i++) {
-        for (let j = minX; j < minX + 3; j++) {
-            matrix[i][j] = rotatedSquare[i - minY][j - minX];
-            colors[i][j] = rotatedSquareColours[i - minY][j - minX];
-          }
+      for (let j = minX; j < minX + 3; j++) {
+        tableroAux[i][j] = rotatedSquare[i - minY][j - minX];
+        colors[i][j] = rotatedSquareColours[i - minY][j - minX];
+      }
     }
-    let contador2=contarPiezas(matrix)
-    
-    
-    let hayColision=colisionGiros(matrix,matrixOriginal)
-    hayColision=hayColision||(contador1!=contador2)
+    let contador2 = contarPiezas(tableroAux)
+    let hayColision = colisionGiros(tableroAux, tableroAuxOriginal)
+    hayColision = hayColision || (contador1 != contador2)
     console.log(hayColision);
-    if(!hayColision){
+    if (!hayColision) {
       console.log("noo hay colision");
-      setTablero(matrix)
+      
+      setTablero(tableroAux)
       setColoresPiezas(colors)
-    }else{
+    } else {
       console.log("hay colision");
-      matrix=original;
-      colors=colorsOriginal
-      setTablero(original)
-      setColoresPiezas(colorsOriginal)
+      let posicionAux=posicion;
+      posicionAux--;
+      setPosicion(posicionAux)
+      
     }
-    console.log(matrixOriginal);
-}
+  }
 
   return (
     <>
