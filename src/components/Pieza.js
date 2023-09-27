@@ -1,5 +1,4 @@
 
-import React, { useState, useEffect } from 'react';
 import '../styles/Tablero.css';
 function Pieza(props) {
   function mostrarTablero() {
@@ -8,7 +7,7 @@ function Pieza(props) {
       const fila = [];
       for (let j = 0; j < props.siguientePieza[i].length; j++) {
         const celda = (
-          <td key={`${i}-${j}`} className={(props.siguientePieza[i][j]==0)?props.coloresPieza:"fondo"}>
+          <td key={`${i}-${j}`} className={(props.siguientePieza[i][j]===0)?props.coloresPieza:"fondo"}>
           </td>
         );
         fila.push(celda);
