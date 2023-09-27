@@ -573,7 +573,6 @@ function App() {
     console.log(hayColision);
     if (!hayColision) {
       console.log("noo hay colision");
-      
       setTablero(tableroAux)
       setColoresPiezas(colors)
     } else {
