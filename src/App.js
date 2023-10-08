@@ -37,10 +37,10 @@ function App() {
       [0, 0, null]
     ],
     [
-      [null, 0, 0],
+      [0, null, null],
       [0, 0, null],
-      [null, null, null]
-    ]
+      [null, 0, null]]
+    
   ]
   const giros = [
     [
@@ -109,26 +109,26 @@ function App() {
     ],
     [
       [
+        [0, null, null],
+        [0, 0, null],
+        [null, 0, null]
+      ],
+      [
         [null, 0, 0],
         [0, 0, null],
         [null, null, null]
       ],
       [
-        [null, 0, null],
-        [null, 0, 0],
-        [null, null, 0]
+        [null, 0, null,null],
+        [null, 0, 0,null],
+        [null, null, 0,null]
       ],
       [
         [null, null, null],
         [null, 0, 0],
         [0, 0, null],
-
-      ],
-      [
-        [0, null, null],
-        [0, 0, null],
-        [null, 0, null]
       ]
+      
 
     ]
   ]
@@ -178,7 +178,7 @@ function App() {
       let numeroPiezaSiguiente = 0;
       if (piezaActual ===null) {
         console.log("genero nuevo");
-        numeroPiezaActual = siguientePieza();
+        numeroPiezaActual = 4;
         setPiezaActual(numeroPiezaActual);
       } else {
         setPiezaActual(piezaSiguiente); // Cambia piezaSiguiente a numeroPiezaSiguiente
@@ -189,7 +189,7 @@ function App() {
       console.log("siguiente " + numeroPiezaSiguiente);
       setPiezaSiguiente(numeroPiezaSiguiente);
 
-      let anchuraPieza = calcularAnchura(numeroPiezaActual);
+      let anchuraPieza = calcularAnchura(piezasDisponibles[numeroPiezaActual]);
       let inicio = anchura - anchuraPieza;
       if (inicio % 2 ===0) {
         inicio = inicio / 2;
@@ -202,7 +202,7 @@ function App() {
 
   function calcularAnchura(pieza) {
     
-    const bloque = piezasDisponibles[pieza]
+    const bloque = pieza
     
     const filas = bloque[0].length;
     const columnas = bloque.length;
@@ -299,7 +299,7 @@ function App() {
 
 
   function moverPiezas() {
-    let tableroAux = [...tablero]
+    let tableroAux =  [...tablero]
     let coloresAux = [...coloresPiezas]
     let controlAltura = false;
     if (!colisionVertical(tableroAux)) {
@@ -328,14 +328,11 @@ function App() {
   }
   function pararPiezas() {
     let tableroAux = [...tablero]
-
     for (let i = (altura - 1); i > 0; i--) {
       for (let j = 0; j < anchura; j++) {
-
         if ((tableroAux[i][j] === 0)) {
           tableroAux[i][j] = 1
         }
-
       }
     }
     setTablero(tableroAux)
@@ -391,7 +388,7 @@ function App() {
     let contador = 0;
     for (let i = 0; i < array.length; i++) {
       for (let j = 0; j < array[0].length; j++) {
-        if (array[i][j] === 0) {
+        if (array[i][j] === 1||array[i][j] === 0) {
           contador++;
         }
 
@@ -400,11 +397,9 @@ function App() {
     return contador;
   }
   function colisionGiros(matrix, matrixOriginal) {
-
     for (let i = 0; i < matrix.length; i++) {
       if (matrix[i].length > anchura) {
         console.log(matrix[i].length);
-        console.log(anchura);
         console.log("tope lado");
         return true;
       }
@@ -421,6 +416,8 @@ function App() {
 
   function juegoEnMarcha() {
     generarPieza()
+    //setTimeout(moverPiezas,1000)
+    //setTimeout(moverPiezas,2000)
     idInterval = setInterval(moverPiezas, 1000);
   }
   function findBoundingSquare(matrix) {
@@ -451,6 +448,7 @@ function App() {
   }
 
   function rotateBoundingSquare(matrix) {
+    
     if ((posicion + 1) >= giros[piezaActual].length) {
       setPosicion(0)
       return giros[piezaActual][0]
@@ -486,14 +484,15 @@ function App() {
 
       
     }
+    console.log(aux);
     return aux;
   }
   function rotateConnectedOnes() {
-    let tableroAuxOriginal = copiaArray(tablero);
-    //let colorsOriginal = copiaArray(coloresPiezas);
-    console.log(tableroAuxOriginal);
-    let tableroAux = copiaArray(tablero);
-    let colors = copiaArray(coloresPiezas);
+    if(piezaActual==1){return}
+    let tableroAuxOriginal = [...tablero]
+    let colorsOriginal = [...coloresPiezas]
+    let tableroAux = [...tablero]
+    let colors = [...coloresPiezas]
     let { minX, minY, squareSize } = findBoundingSquare(tableroAux);
     // Extrae la matriz cuadrática que rodea a los elementos '1'.
     let boundingSquare = [];
@@ -531,37 +530,74 @@ function App() {
     if (piezaActual === 3 && posicion === 3) {
       minY--;
     }
-    if (piezaActual === 4 && posicion === 1) {
+    if (piezaActual === 4 && posicion === 2) {
       minX--;
     }
-    if (piezaActual === 4 && posicion === 2) {
-      minY--;
-    }
+    
+    
     
     let contador1 = contarPiezas(tableroAuxOriginal)
-    
     // Actualiza la matriz original con los valores rotados en el centro.
-    for (let i = minY; i < minY + rotatedSquare.length; i++) {
+    console.log(minX + calcularAnchura(rotatedSquare));
+    console.log(rotatedSquare);
+    if(minX + calcularAnchura(rotatedSquare)>10){
+      let posicionAux=posicion;
+      if(posicion-1>=0){
+        posicionAux--;
+      }
+      console.log("cancelando");
+      setPosicion(posicionAux)
+      return
+    }
+    console.log(...tableroAux);
+    let anchuraAmpliar=3;
+    
+    if(minX==-1){
+      let posicionAux=posicion;
+      if(posicion-1>=0){
+      }
+      setPosicion(posicionAux)
+      return
+    }
+    let maxVal = Math.max(rotatedSquare.length, giros[piezaActual][posicion].length);
+    console.log(maxVal);
+    for (let i = minY; i < minY + 3; i++) {       
       for (let j = minX; j < minX + 3; j++) {
+        console.log(j);
+        if(j==anchura){
+          break;
+        }
+        
         tableroAux[i][j] = rotatedSquare[i - minY][j - minX];
         colors[i][j] = rotatedSquareColours[i - minY][j - minX];
       }
     }
+    console.log(...tableroAux);
     let contador2 = contarPiezas(tableroAux)
-    let hayColision = colisionGiros(tableroAux, tableroAuxOriginal)
-    hayColision = hayColision || (contador1 !== contador2)
-    console.log(hayColision);
-    if (!hayColision) {
-      console.log("noo hay colision");
-      setTablero(tableroAux)
-      setColoresPiezas(colors)
-    } else {
-      console.log("hay colision");
-      let posicionAux=posicion;
-      posicionAux--;
-      setPosicion(posicionAux)
-      
+    
+    if(!colisionGiros(tableroAux, tableroAuxOriginal)){
+      if((contador1 === contador2)){
+        console.log("noo hay colision");
+        setTablero(tableroAux)
+        setColoresPiezas(colors)
+      }else{
+        console.log("hay colision");
+        console.log(contador1+" "+contador2);
+        let posicionAux=posicion;
+        if(posicion-1>=0){
+          posicionAux--;
+        }else{
+          //posicionAux=giros[piezaActual].length-1
+        }
+        setPosicion(posicionAux)
+        setTablero(tableroAuxOriginal)
+        setColoresPiezas(colorsOriginal)
+      }
+    }else{
+      setTablero(tableroAuxOriginal)
+      setColoresPiezas(colorsOriginal)
     }
+    console.log([...tableroAux]);
   }
 
   return (
