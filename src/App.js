@@ -9,9 +9,11 @@ function App() {
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
   const [piezaActual, setPiezaActual] = useState(null);
+  const [formaPiezaActual, setFormaPiezaActual] = useState(null);
+  const [formaPiezaSiguiente, setFormaPiezaSiguiente] = useState(null);
   const [piezaSiguiente, setPiezaSiguiente] = useState(null);
 
-  const altura = 20;
+  const altura = 10;
   const anchura = 10;
   const colores = ["square", "t", "l", "z", "I"]
   let idInterval;
@@ -176,19 +178,23 @@ function App() {
     if (jugando) {
       let numeroPiezaActual = 0;
       let numeroPiezaSiguiente = 0;
-      if (piezaActual ===null) {
+      console.log(formaPiezaActual);
+      console.log(formaPiezaActual===null);
+      if (formaPiezaSiguiente===null) {
         console.log("genero nuevo");
-        numeroPiezaActual = 4;
+        numeroPiezaActual = siguientePieza();
         setPiezaActual(numeroPiezaActual);
+        setFormaPiezaActual(piezasDisponibles[numeroPiezaActual])
       } else {
         setPiezaActual(piezaSiguiente); // Cambia piezaSiguiente a numeroPiezaSiguiente
+        setFormaPiezaActual(piezasDisponibles[piezaSiguiente])
       }
       console.log("actual " + numeroPiezaActual);
 
       numeroPiezaSiguiente = siguientePieza();
       console.log("siguiente " + numeroPiezaSiguiente);
       setPiezaSiguiente(numeroPiezaSiguiente);
-
+      setFormaPiezaSiguiente(piezasDisponibles[numeroPiezaSiguiente])
       let anchuraPieza = calcularAnchura(piezasDisponibles[numeroPiezaActual]);
       let inicio = anchura - anchuraPieza;
       if (inicio % 2 ===0) {
@@ -218,6 +224,25 @@ function App() {
       }
     }
     return anchuraMaxima;
+  }
+  function calcularAltura(pieza) {
+    
+    const bloque = pieza
+    
+    const filas = bloque[0].length;
+    const columnas = bloque.length;
+    
+    let alturaMaxima = 0;
+
+    for (let i = 0; i < columnas; i++) {
+      for (let j = 0; j < filas; j++) {
+        if (bloque[i][j] ===0) {
+          alturaMaxima++;
+          break;
+        }
+      }
+    }
+    return alturaMaxima;
   }
   
 
@@ -394,6 +419,7 @@ function App() {
 
       }
     }
+    console.log("numero piezas "+contador);
     return contador;
   }
   function colisionGiros(matrix, matrixOriginal) {
@@ -495,18 +521,9 @@ function App() {
     let colors = [...coloresPiezas]
     let { minX, minY, squareSize } = findBoundingSquare(tableroAux);
     // Extrae la matriz cuadrática que rodea a los elementos '1'.
-    let boundingSquare = [];
-    let boundingSquareColours = [];
-    for (let i = minY; i < minY + squareSize; i++) {
-      let row = [];
-      let row2 = [];
-      for (let j = minX; j < minX + squareSize; j++) {
-        row.push(tableroAux[i][j]);
-        row2.push(colors[i][j]);
-      }
-      boundingSquare.push(row);
-      boundingSquareColours.push(row2);
-    }
+    let boundingSquare = giros[piezaActual][posicion];    
+    
+    
     // Rota la matriz cuadrática.
     let rotatedSquare = rotateBoundingSquare(boundingSquare);
     let rotatedSquareColours = rotateBoundingSquareColours(rotatedSquare);
@@ -533,13 +550,13 @@ function App() {
     if (piezaActual === 4 && posicion === 2) {
       minX--;
     }
+    console.log(minY);
+    
     
     
     
     let contador1 = contarPiezas(tableroAuxOriginal)
     // Actualiza la matriz original con los valores rotados en el centro.
-    console.log(minX + calcularAnchura(rotatedSquare));
-    console.log(rotatedSquare);
     if(minX + calcularAnchura(rotatedSquare)>10){
       let posicionAux=posicion;
       if(posicion-1>=0){
@@ -549,30 +566,45 @@ function App() {
       setPosicion(posicionAux)
       return
     }
-    console.log(...tableroAux);
-    let anchuraAmpliar=3;
-    
-    if(minX==-1){
+    console.log(minY + calcularAltura(rotatedSquare));
+    if(minX==-1||minY + calcularAltura(rotatedSquare)>altura){
       let posicionAux=posicion;
       if(posicion-1>=0){
       }
       setPosicion(posicionAux)
       return
     }
+    let choquePieza=false;
     let maxVal = Math.max(rotatedSquare.length, giros[piezaActual][posicion].length);
-    console.log(maxVal);
+    console.log(...tableroAux);
+    console.log(...rotatedSquare);
     for (let i = minY; i < minY + 3; i++) {       
       for (let j = minX; j < minX + 3; j++) {
-        console.log(j);
-        if(j==anchura){
+        
+        if (tableroAux[i][j]==1&&rotatedSquare[i - minY][j - minX]==0||tableroAux[i][j]==1&&rotatedSquare[i - minY][j - minX]==null) {
+          console.log("coque pieza");
+          choquePieza=true;
           break;
         }
+      }
+    }
+    if(choquePieza){
+      return
+    }
+    for (let i = minY; i < minY + 3; i++) {       
+      for (let j = minX; j < minX + 3; j++) {
+       
+        if(j==anchura||i==altura){
+          console.log("altura maxima");
+          break;
+        }
+        
         
         tableroAux[i][j] = rotatedSquare[i - minY][j - minX];
         colors[i][j] = rotatedSquareColours[i - minY][j - minX];
       }
+      
     }
-    console.log(...tableroAux);
     let contador2 = contarPiezas(tableroAux)
     
     if(!colisionGiros(tableroAux, tableroAuxOriginal)){
@@ -586,8 +618,6 @@ function App() {
         let posicionAux=posicion;
         if(posicion-1>=0){
           posicionAux--;
-        }else{
-          //posicionAux=giros[piezaActual].length-1
         }
         setPosicion(posicionAux)
         setTablero(tableroAuxOriginal)
@@ -597,7 +627,6 @@ function App() {
       setTablero(tableroAuxOriginal)
       setColoresPiezas(colorsOriginal)
     }
-    console.log([...tableroAux]);
   }
 
   return (
