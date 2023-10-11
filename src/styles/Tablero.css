@@ -40,7 +40,9 @@ table{
   }
   
 .z{
-    max-width: 1rem;
+    width: 2rem;
+    height: 2rem;
+
     background-color: #55FE01;
   border: 1px solid #4CAF50; /* Borde de un tono más oscuro */
   
