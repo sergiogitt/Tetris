@@ -4,6 +4,13 @@
   justify-content: center;
   align-items: center;
 }
+table {
+  background-color: #444; /* Color de fondo para el espacio vacío en el tablero */
+}
+tr {
+  border: 1px solid #fff;/* Hace que cada casilla sea un cuadrado */
+  background-color: #333; /* Color de fondo de las casillas */
+}
 
 .App-logo {
   height: 40vmin;

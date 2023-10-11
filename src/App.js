@@ -8,10 +8,8 @@ function App() {
   const [posicion, setPosicion] = useState(0);
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
-  const [piezaActual, setPiezaActual] = useState(null);
-  const [formaPiezaActual, setFormaPiezaActual] = useState(null);
-  const [formaPiezaSiguiente, setFormaPiezaSiguiente] = useState(null);
-  const [piezaSiguiente, setPiezaSiguiente] = useState(null);
+  const [piezaActual, setPiezaActual] = useState(0);
+  const [piezaSiguiente, setPiezaSiguiente] = useState(0);
 
   const altura = 10;
   const anchura = 10;
@@ -136,7 +134,11 @@ function App() {
   ]
   useEffect(() => {
     // Función para inicializar el tablero
+    
     const inicializarTablero = () => {
+      let siguiente=siguientePieza();
+      setPiezaSiguiente(siguiente)
+    console.log("generando");
       const tableroAux = [];
       const tableroColoresAux = [];
       for (let i = 0; i < altura; i++) {
@@ -175,26 +177,20 @@ function App() {
   }, []);
 
   function generarPieza() {
-    if (jugando) {
-      let numeroPiezaActual = 0;
-      let numeroPiezaSiguiente = 0;
-      console.log(formaPiezaActual);
-      console.log(formaPiezaActual===null);
-      if (formaPiezaSiguiente===null) {
-        console.log("genero nuevo");
-        numeroPiezaActual = siguientePieza();
-        setPiezaActual(numeroPiezaActual);
-        setFormaPiezaActual(piezasDisponibles[numeroPiezaActual])
-      } else {
-        setPiezaActual(piezaSiguiente); // Cambia piezaSiguiente a numeroPiezaSiguiente
-        setFormaPiezaActual(piezasDisponibles[piezaSiguiente])
-      }
-      console.log("actual " + numeroPiezaActual);
-
-      numeroPiezaSiguiente = siguientePieza();
+    console.log(piezaSiguiente);
+      let numeroPiezaSiguiente = siguientePieza(); // Obtén el nuevo valor de piezaSiguiente
       console.log("siguiente " + numeroPiezaSiguiente);
+      let numeroPiezaActual = piezaSiguiente; // Obtén el valor actual de piezaSiguiente
+      console.log("actual " + numeroPiezaActual);
+      
+      // Asegúrate de que el valor de piezaSiguiente se actualice en el estado de React
       setPiezaSiguiente(numeroPiezaSiguiente);
-      setFormaPiezaSiguiente(piezasDisponibles[numeroPiezaSiguiente])
+      
+      // Luego, actualiza el valor de piezaActual
+      setPiezaActual(numeroPiezaActual);
+      console.log("siguiente"+ numeroPiezaSiguiente);
+    if (jugando) {
+      
       let anchuraPieza = calcularAnchura(piezasDisponibles[numeroPiezaActual]);
       let inicio = anchura - anchuraPieza;
       if (inicio % 2 ===0) {
@@ -247,6 +243,7 @@ function App() {
   
 
   function colocarPieza(pieza, inicio) {
+    console.log("colocando "+pieza);
     const filas = piezasDisponibles[pieza][0].length;
     const columnas = piezasDisponibles[pieza].length;
     const bloque = piezasDisponibles[pieza];
@@ -361,6 +358,70 @@ function App() {
       }
     }
     setTablero(tableroAux)
+    comprobarLinea()
+  }
+  function contieneVacio(matriz){
+    for (let i = 0; i < matriz.length; i++) {
+     if(matriz[i][0]==null){
+      return i
+     }
+      
+    }
+    return -1
+  }
+  function comprobarLinea(){
+    let tableroAux = [...tablero];
+    let coloresAux = [...coloresPiezas];
+    let lineasBorrar=[];
+    for (let i = (altura - 1); i > 0; i--) {
+      let linea=true;
+      for (let j = 0; j < anchura; j++) {
+        if ((tableroAux[i][j] !== 1)) {
+          linea=false;
+        }
+      }
+      if(linea){
+        lineasBorrar.push(i)
+      }
+    }
+    if(lineasBorrar.length>0){
+      borrarLineas(lineasBorrar,tableroAux)
+      borrarLineas(lineasBorrar,coloresAux)
+      console.log(lineasBorrar);
+      lineasBorrar.forEach(element => {
+        bajarLinea(element,tableroAux,null)
+        bajarLinea(element,coloresAux,"fondo")
+      });
+      
+      
+      
+      
+    }
+  }
+  
+  function borrarLineas(lineas,array){
+    lineas=lineas.sort((a, b) => b - a);
+    // Itera a través de los números en el array y copia el contenido de las filas superiores.
+    for (let i = 0; i < array.length; i++) {
+      for (let j = 0; j < lineas.length; j++) {
+        array[lineas[j]][i]=null;
+      }
+    }
+    return array;
+  }
+  function bajarLinea(linea,matriz,hueco){
+    for (let i = linea; i >0; i--) {
+      if(i==0){
+        for (let j = 0; j < anchura; j++) {
+          matriz[i][j]=hueco
+        }
+      }else{
+        for (let j = 0; j < anchura; j++) {
+          matriz[i][j]=matriz[i-1][j]
+        }
+      }   
+    }
+    console.log(...matriz);
   }
   function colisionHorizontalLeft(array) {
     for (let j = 0; j < anchura; j++) {
@@ -419,7 +480,6 @@ function App() {
 
       }
     }
-    console.log("numero piezas "+contador);
     return contador;
   }
   function colisionGiros(matrix, matrixOriginal) {
@@ -444,7 +504,7 @@ function App() {
     generarPieza()
     //setTimeout(moverPiezas,1000)
     //setTimeout(moverPiezas,2000)
-    idInterval = setInterval(moverPiezas, 1000);
+    idInterval = setInterval(moverPiezas, 300);
   }
   function findBoundingSquare(matrix) {
     const numRows = matrix.length;
@@ -576,11 +636,13 @@ function App() {
     }
     let choquePieza=false;
     let maxVal = Math.max(rotatedSquare.length, giros[piezaActual][posicion].length);
-    console.log(...tableroAux);
-    console.log(...rotatedSquare);
     for (let i = minY; i < minY + 3; i++) {       
       for (let j = minX; j < minX + 3; j++) {
-        
+        if(j==anchura||i==altura){
+          console.log("altura maxima");
+          choquePieza=true;
+          break;
+        }
         if (tableroAux[i][j]==1&&rotatedSquare[i - minY][j - minX]==0||tableroAux[i][j]==1&&rotatedSquare[i - minY][j - minX]==null) {
           console.log("coque pieza");
           choquePieza=true;
@@ -593,20 +655,14 @@ function App() {
     }
     for (let i = minY; i < minY + 3; i++) {       
       for (let j = minX; j < minX + 3; j++) {
-       
-        if(j==anchura||i==altura){
-          console.log("altura maxima");
-          break;
-        }
-        
-        
+              
         tableroAux[i][j] = rotatedSquare[i - minY][j - minX];
         colors[i][j] = rotatedSquareColours[i - minY][j - minX];
       }
       
     }
     let contador2 = contarPiezas(tableroAux)
-    
+    console.log(...tableroAux);
     if(!colisionGiros(tableroAux, tableroAuxOriginal)){
       if((contador1 === contador2)){
         console.log("noo hay colision");

@@ -11,9 +11,7 @@ table{
     height: 2rem;
     background-color: #FDF016;
     border: 4px solid #D4BF00; /* Borde de un tono más oscuro */
-    box-shadow: 
-      2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
-      -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
+    
   }
   
   /* Para el color rojo (#FF0000) */
@@ -22,9 +20,7 @@ table{
     height: 2rem;
     background-color: #FF0000;
     border: 4px solid #CC0000; /* Borde de un tono más oscuro */
-    box-shadow: 
-      2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
-      -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
+    
   }
   
   /* Para el color #A900FD */
@@ -33,27 +29,21 @@ table{
     height: 2rem;
     background-color: #A900FD;
     border: 4px solid #8000C0; /* Borde de un tono más oscuro */
-    box-shadow: 
-      2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
-      -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
+    
   }
   .I {
     width: 2rem;
     height: 2rem;
     background-color: #0F6CF2;
     border: 4px solid #0C52A4; /* Borde de un tono más oscuro */
-    box-shadow:
-      2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
-      -2px -2px 2px rgba(255, 255, 255, 0.7); /* Sombra izquierda y superior */
+    
   }
   
 .z{
     max-width: 1rem;
     background-color: #55FE01;
   border: 1px solid #4CAF50; /* Borde de un tono más oscuro */
-  box-shadow: 
-    2px 2px 2px rgba(0, 0, 0, 0.2), /* Sombra derecha e inferior */
-    -2px -2px 2px rgba(255, 255, 255, 0.7);
+  
 }
 /* Para el color #0F0F0F */
 .fondo {
