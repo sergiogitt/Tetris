@@ -8,13 +8,14 @@ function App() {
   const [posicion, setPosicion] = useState(0);
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
+  const [perdido, setPerdido] = useState(false);
   const [piezaActual, setPiezaActual] = useState(0);
+  const [idInterval, setIdInterval] = useState(0);
   const [piezaSiguienteHook, setPiezaSiguienteHook] = useState(null);
 
   const altura = 10;
   const anchura = 10;
   const colores = ["I", "square", "t", "l", "z"]
-  let idInterval;
   const piezasDisponibles = [
     [
       [0, null, null],
@@ -134,29 +135,26 @@ function App() {
   ]
   useEffect(() => {
     // Función para inicializar el tablero
-
-    const inicializarTablero = () => {
-      let siguiente = 1;
-
-      // Luego, actualiza el valor de piezaActual
-      document.getElementById("siguientePieza").innerHTML = siguiente;
-      setPiezaSiguienteHook(siguiente)
-      const tableroAux = [];
-      const tableroColoresAux = [];
-      for (let i = 0; i < altura; i++) {
-        const filaAux = Array(anchura).fill(null);
-        const filaAuxColores = Array(anchura).fill("fondo"); // Llena la fila con valores nulos
-        tableroAux.push(filaAux);
-        tableroColoresAux.push(filaAuxColores)
-      }
-      tableroAux[1][1] = 1;
-      tableroColoresAux[1][1] = "I";
-      setTablero(tableroAux);
-      setColoresPiezas(tableroColoresAux);
-    };
     inicializarTablero();
   }, []); // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
+  const inicializarTablero = () => {
+    let siguiente = siguientePieza();
 
+    // Luego, actualiza el valor de piezaActual
+    document.getElementById("siguientePieza").innerHTML = siguiente;
+    setPiezaSiguienteHook(siguiente)
+    const tableroAux = [];
+    const tableroColoresAux = [];
+    for (let i = 0; i < altura; i++) {
+      const filaAux = Array(anchura).fill(null);
+      const filaAuxColores = Array(anchura).fill("fondo"); // Llena la fila con valores nulos
+      tableroAux.push(filaAux);
+      tableroColoresAux.push(filaAuxColores)
+    }
+    
+    setTablero(tableroAux);
+    setColoresPiezas(tableroColoresAux);
+  };
   function siguientePieza() {
     setPosicion(0)
     return Math.floor(Math.random() * piezasDisponibles.length); // Genera un número entre 0 (inclusive) y 4 (exclusivo)
@@ -183,7 +181,7 @@ function App() {
 
   function generarPieza() {
     // Obtén el valor actual de piezaSiguienteHook
-    const numeroPiezaSiguienteHook = 1; // Obtén el nuevo valor de piezaSiguienteHook
+    const numeroPiezaSiguienteHook = siguientePieza(); // Obtén el nuevo valor de piezaSiguienteHook
     let texto = document.getElementById("siguientePieza").innerHTML;
     const numeroPiezaActual = texto;
 
@@ -204,8 +202,29 @@ function App() {
       } else {
         inicio = (inicio + 1) / 2;
       }
-      colocarPieza(numeroPiezaActual, inicio);
+      if(ultimaLineaOcupada(inicio)>=calcularAltura(piezasDisponibles[numeroPiezaActual])){
+        colocarPieza(numeroPiezaActual, inicio);
+      }else{
+        setJugando(false)
+        setPerdido(true)
+      }
+      
     }
+  }
+  function ultimaLineaOcupada(inicio){
+    for (let i = 0; i < altura; i++) {
+      for (let j = 0; j < anchura; j++) {
+        let col = j + inicio;
+        if (tablero[i][col]!=null) {
+          console.log("gol"+ i);
+          return i
+        }
+        
+      }
+      
+    }
+    console.log(anchura);
+    return anchura
   }
 
   function calcularAnchura(pieza) {
@@ -269,6 +288,7 @@ function App() {
     } else {
       setJugando(false)
       clearInterval(idInterval)
+      setIdInterval(null)
     }
 
     if (jugando) {
@@ -529,12 +549,24 @@ function App() {
 
     return false;
   }
+  function resetTablero(){
+    clearInterval(idInterval)
+    setIdInterval(null)
+    
+    for (let i = 0; i < altura; i++) {
+      for (let j = 0; j < anchura; j++) {
+        tablero[i][j]=null;
+        coloresPiezas[i][j]="fondo"
+        
+      }      
+    }
+  }
 
   function juegoEnMarcha() {
+    
     generarPieza()
-    //setTimeout(moverPiezas,1000)
-    //setTimeout(moverPiezas,2000)
-    idInterval = setInterval(moverPiezas, 300);
+    setIdInterval(setInterval(moverPiezas, 300))
+    
   }
   function findBoundingSquare(matrix) {
     const numRows = matrix.length;
@@ -725,6 +757,7 @@ function App() {
         setColoresPiezas={setColoresPiezas}
       ></Tablero>
       <button onClick={juegoEnMarcha}>Empezar</button>
+      <button onClick={resetTablero}>Reset</button>
       <button id="moverIzq" onClick={moverPiezaLateralIzq}>Izquierda</button>
       <button id="moverDer" onClick={moverPiezaLateralDer}>Derecha</button>
       <button id="girar" onClick={rotateConnectedOnes}>Girar</button>
