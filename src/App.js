@@ -9,11 +9,11 @@ function App() {
   const [coloresPiezas, setColoresPiezas] = useState([]);
   const [jugando, setJugando] = useState(true);
   const [piezaActual, setPiezaActual] = useState(0);
-  const [piezaSiguienteHook, setPiezaSiguienteHook] = useState(0);
+  const [piezaSiguienteHook, setPiezaSiguienteHook] = useState(null);
 
   const altura = 10;
   const anchura = 10;
-  const colores = ["square", "t", "l", "z", "I"]
+  const colores = ["I", "square", "t", "l", "z"]
   let idInterval;
   const piezasDisponibles = [
     [
@@ -136,11 +136,11 @@ function App() {
     // Función para inicializar el tablero
 
     const inicializarTablero = () => {
-      let siguiente=siguientePieza();
+      let siguiente = 1;
 
-    // Luego, actualiza el valor de piezaActual
-    document.getElementById("siguientePieza").innerHTML=siguiente;
-    setPiezaSiguienteHook(siguiente)
+      // Luego, actualiza el valor de piezaActual
+      document.getElementById("siguientePieza").innerHTML = siguiente;
+      setPiezaSiguienteHook(siguiente)
       const tableroAux = [];
       const tableroColoresAux = [];
       for (let i = 0; i < altura; i++) {
@@ -149,6 +149,8 @@ function App() {
         tableroAux.push(filaAux);
         tableroColoresAux.push(filaAuxColores)
       }
+      tableroAux[1][1] = 1;
+      tableroColoresAux[1][1] = "I";
       setTablero(tableroAux);
       setColoresPiezas(tableroColoresAux);
     };
@@ -180,18 +182,15 @@ function App() {
 
 
   function generarPieza() {
-     // Obtén el valor actual de piezaSiguienteHook
-    const numeroPiezaSiguienteHook = siguientePieza(); // Obtén el nuevo valor de piezaSiguienteHook
-    let texto=document.getElementById("siguientePieza").innerHTML;
-    console.log("siguiente " + numeroPiezaSiguienteHook);
-    console.log("---------------------------------------");
+    // Obtén el valor actual de piezaSiguienteHook
+    const numeroPiezaSiguienteHook = 1; // Obtén el nuevo valor de piezaSiguienteHook
+    let texto = document.getElementById("siguientePieza").innerHTML;
     const numeroPiezaActual = texto;
-    console.log("actual " + numeroPiezaActual);
 
     // Luego, actualiza el valor de piezaActual
     setPiezaActual(numeroPiezaActual);
     setPiezaSiguienteHook(numeroPiezaSiguienteHook);
-    document.getElementById("siguientePieza").innerHTML=numeroPiezaSiguienteHook;
+    document.getElementById("siguientePieza").innerHTML = numeroPiezaSiguienteHook;
     // Asegúrate de que el valor de piezaSiguienteHook se actualice en el estado de React
 
 
@@ -250,7 +249,6 @@ function App() {
 
 
   function colocarPieza(pieza, inicio) {
-    console.log("colocando " + pieza);
     const filas = piezasDisponibles[pieza][0].length;
     const columnas = piezasDisponibles[pieza].length;
     const bloque = piezasDisponibles[pieza];
@@ -399,13 +397,36 @@ function App() {
         bajarLinea(element, tableroAux, null)
         bajarLinea(element, coloresAux, "fondo")
       });
+      if (tieneFallo(coloresAux)) {
+        
+        
+          bajarLinea(altura-1, tableroAux, null)
+          bajarLinea(altura-1, coloresAux, "fondo")
+        
+      }
 
 
 
 
     }
   }
+  function tieneFallo(matrix) {
+    let fallo = false;
+    for (let i = 0; i < matrix.length; i++) {
+      
+      for (let j = 0; j < matrix.length; j++) {
+        if (matrix[i][j] == null) {
+          fallo = true
+        }
+      }
 
+    }
+    if(fallo){
+      console.log("tiene falllo");
+
+    }
+    return tieneFallo;
+  }
   function borrarLineas(lineas, array) {
     lineas = lineas.sort((a, b) => b - a);
     // Itera a través de los números en el array y copia el contenido de las filas superiores.
@@ -416,18 +437,20 @@ function App() {
     }
     return array;
   }
-  function bajarLinea(linea, matriz, hueco) {
+  function bajarLinea(linea, matriz, hueco, lineas) {
     for (let i = linea; i > 0; i--) {
+      console.log("linea " + i);
       if (i == 0) {
         for (let j = 0; j < anchura; j++) {
           matriz[i][j] = hueco
         }
       } else {
-        for (let j = 0; j < anchura; j++) {
-          matriz[i][j] = matriz[i - 1][j]
-        }
+          for (let j = 0; j < anchura; j++) {
+            matriz[i][j] = matriz[i - 1][j]
+          }
       }
     }
+    console.log("-----------------------");
     console.log(...matriz);
   }
   function colisionHorizontalLeft(array) {
@@ -691,7 +714,6 @@ function App() {
       setColoresPiezas(colorsOriginal)
     }
   }
-  console.log(piezaActual);
   return (
     <>
       <h1>En desarrollo</h1>
@@ -706,8 +728,8 @@ function App() {
       <button id="moverIzq" onClick={moverPiezaLateralIzq}>Izquierda</button>
       <button id="moverDer" onClick={moverPiezaLateralDer}>Derecha</button>
       <button id="girar" onClick={rotateConnectedOnes}>Girar</button>
-      
-      {piezaSiguienteHook ? (
+
+      {piezaSiguienteHook != null ? (
         <Pieza
           siguientePieza={piezasDisponibles[piezaSiguienteHook]}
           coloresPieza={colores[piezaSiguienteHook]}

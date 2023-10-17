@@ -5,7 +5,7 @@ function Pieza(props) {
     const tabla = [];
     for (let i = 0; i < props.siguientePieza.length; i++) {
       const fila = [];
-      for (let j = 0; j < props.siguientePieza[i].length; j++) {
+      for (let j = 0; j < props.siguientePieza[i].length-1; j++) {
         const celda = (
           <td key={`${i}-${j}`} className={(props.siguientePieza[i][j]===0)?props.coloresPieza:"fondo"}>
           </td>
