@@ -54,4 +54,27 @@ table{
     background-color: #0F0F0F;
     
   }
+  .pausado{
+    filter: grayscale(80%);
+  }
+  #fondoTablero{
+    position: relative;
+  }
+  @import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
+
+  #gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ff0000;
+    color: #ffffff;
+    font-size: 24px;
+    padding: 20px;
+    border-radius: 5px;
+    font-family: 'Press Start 2P', monospace; /* Aquí se define una sola vez */
+    font-size: 22px;
+  }
+  
+
   

@@ -138,7 +138,7 @@ function App() {
     inicializarTablero();
   }, []); // El segundo argumento [] asegura que esto solo se ejecute una vez al montar el componente
   const inicializarTablero = () => {
-    let siguiente = siguientePieza();
+    let siguiente =2;
 
     // Luego, actualiza el valor de piezaActual
     document.getElementById("siguientePieza").innerHTML = siguiente;
@@ -181,7 +181,7 @@ function App() {
 
   function generarPieza() {
     // Obtén el valor actual de piezaSiguienteHook
-    const numeroPiezaSiguienteHook = siguientePieza(); // Obtén el nuevo valor de piezaSiguienteHook
+    const numeroPiezaSiguienteHook = 2; // Obtén el nuevo valor de piezaSiguienteHook
     let texto = document.getElementById("siguientePieza").innerHTML;
     const numeroPiezaActual = texto;
 
@@ -552,6 +552,7 @@ function App() {
   function resetTablero(){
     clearInterval(idInterval)
     setIdInterval(null)
+    setJugando(true)
     
     for (let i = 0; i < altura; i++) {
       for (let j = 0; j < anchura; j++) {
@@ -565,7 +566,7 @@ function App() {
   function juegoEnMarcha() {
     
     generarPieza()
-    setIdInterval(setInterval(moverPiezas, 300))
+    setIdInterval(setInterval(moverPiezas, 1000))
     
   }
   function findBoundingSquare(matrix) {
@@ -636,7 +637,9 @@ function App() {
     return aux;
   }
   function rotateConnectedOnes() {
-    if (piezaActual === 1) { return }
+    if (piezaActual !== 1) {
+      
+    console.log(piezaActual);
     let tableroAuxOriginal = [...tablero]
     let colorsOriginal = [...coloresPiezas]
     let tableroAux = [...tablero]
@@ -657,8 +660,11 @@ function App() {
     if (piezaActual === 0 && posicion === 1) {
       minY--;
     }
+    console.log(piezaActual +" "+ posicion);
     if (piezaActual === 2 && posicion === 2) {
+      console.log(minX);
       minX--;
+      console.log(minX);
     }
     if (piezaActual === 2 && posicion === 3) {
       minY--;
@@ -672,7 +678,6 @@ function App() {
     if (piezaActual === 4 && posicion === 2) {
       minX--;
     }
-    console.log(minY);
 
 
 
@@ -746,11 +751,14 @@ function App() {
       setColoresPiezas(colorsOriginal)
     }
   }
+  console.log("giro");
+  }
   return (
     <>
       <h1>En desarrollo</h1>
       <p id="siguientePieza" ></p>
       <Tablero
+      jugando={jugando}
         tablero={tablero}
         setTablero={setTablero}
         coloresPiezas={coloresPiezas}

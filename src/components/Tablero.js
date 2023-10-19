@@ -35,7 +35,10 @@ function Tablero(props) {
   }
   
   return (
-    <div>{mostrarTablero()}</div>
+          <div id="fondoTablero">    <div className={(props.jugando)?"":"pausado"}>{mostrarTablero()}</div>
+          {(props.jugando)?null:(<div id="gameOver">GAME OVER</div>)}
+          
+    </div>
       
     
   );
