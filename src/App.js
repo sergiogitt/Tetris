@@ -181,7 +181,7 @@ function App() {
 
   function generarPieza() {
     // Obtén el valor actual de piezaSiguienteHook
-    const numeroPiezaSiguienteHook = 2; // Obtén el nuevo valor de piezaSiguienteHook
+    const numeroPiezaSiguienteHook = siguientePieza(); // Obtén el nuevo valor de piezaSiguienteHook
     let texto = document.getElementById("siguientePieza").innerHTML;
     const numeroPiezaActual = texto;
 
